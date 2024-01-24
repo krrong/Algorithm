@@ -1,50 +1,41 @@
 #include <iostream>
-#include <vector>
 using namespace std;
 
 int n;
-vector<int> triangle;
-int dp[125251];
+int dp[501][501];
 
 int main() {
     ios::sync_with_stdio(0);
-    cin.tie(0);
+    cin.tie(0);       
     cout.tie(0);
 
     cin >> n;
-    for(int i = 1; i <= n; i++) {
-        for(int j = 0; j < i; j++) {
-            int tmp;
-            cin >> tmp;
-            triangle.push_back(tmp);
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j <= i; j++) {
+            cin >> dp[i][j];
         }
     }
 
-    int a = 0;
-    for(int i = 1; i <= n; i++) {
-        for(int j = 0; j < i; j++) {
-            dp[a] = triangle[a];
-            a++;
+    for(int i = 1; i < n; i++) {
+        for(int j = 0; j <= i; j++) {
+            // 첫번째 숫자인 경우 내려올 수 있는 부모가 하나다.
+            if(j == 0) {
+                dp[i][j] = dp[i][j] + dp[i - 1][j];
+            }
+            // 마지막 숫자인 경우 내려올 수 있는 부모가 하나다.
+            else if(i == j) {
+                dp[i][j] = dp[i][j] + dp[i - 1][j - 1];
+            }
+            // 양쪽 부모 중 큰 숫자를 선택
+            else {
+                dp[i][j] = dp[i][j] + max(dp[i - 1][j - 1], dp[i - 1][j]);
+            }
         }
-    }
-
-    // n층이면 n개가 있는 형태
-    // 마지막층 빼고 dp 테이블 순회
-    int height = 1;
-    for(int i = 0; i < triangle.size() - n; i++) {
-        int tmpHeight = height;
-        while(tmpHeight--) {
-            dp[i + height] = max(dp[i + height], dp[i] + triangle[i + height]);
-            dp[i + 1 + height] = max(dp[i + 1 + height], dp[i] + triangle[i + 1 + height]);
-            i++;
-        }
-        i--;
-        height++;
     }
 
     int ans = 0;
-    for(int i = triangle.size() - n; i < triangle.size(); i++) {
-        ans = max(ans, dp[i]);
+    for(int i = 0; i <= n; i++) {
+        ans = max(ans, dp[n-1][i]);
     }
 
     cout << ans;
